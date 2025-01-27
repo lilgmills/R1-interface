@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepseek R1 Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+    </script>
+</head>
+<body>
+    <h1>Run Ollama with Python</h1>
+    <div id="results"></div>
+
+    <!--
+    <script src="https://unpkg.com(flask)@latest/dist前端.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui@3.16.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-icons@2.7.4"></script>
+
+    -->
+    
+    <div id="requestForm">
+        <form id="requestForm" method="post">
+            <input type="text" id="prompt" placeholder="Enter your prompt..." required>
+            <textarea id="temperature" value="0.7" placeholder="Temperature (higher value for more creative
+responses)"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <div id="outputDiv"></div>
+    <script src = "{{ url_for('static', filename='script.js')}}"></script>
+</body>
+</html>
