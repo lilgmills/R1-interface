@@ -1,16 +1,23 @@
 
 const requestForm = document.getElementById('requestForm');
 const outputDiv = document.getElementById('outputDiv');
+let conversationHistory = "";
 
 requestForm.addEventListener('submit', function(e) {
     e.preventDefault();
     const prompt = document.getElementById('prompt').value;
-    const temperature = parseFloat(document.getElementById('temperature').value);
+
+    const userMessage = document.createElement('div');
+    userMessage.innerHTML = prompt;
+    outputDiv.appendChild(userMessage);
+    Array.from(prompt).forEach(character=>{
+	conversationHistory += character;
+    });
 
     // Send the request to Ollama
     fetch(`http://localhost:11434/api/generate`, {method: "POST",body: JSON.stringify({
         "model": "deepseek-r1:7b", //any models pulled from Ollama can be replaced here
-        "prompt": `${prompt}` //The prompt should be written here
+        "prompt": `${conversationHistory}` //The prompt should be written here
       }),
     
     // Adding headers to the request
@@ -38,8 +45,10 @@ requestForm.addEventListener('submit', function(e) {
                 }
             })
             
-            let responses = Array()
-            let final_object
+            let responses = Array();
+            let final_object;
+	    let messageHistoryResponse = Array();
+	    let appIsThinking = false;
             json_objects.forEach((obj)=>{
                 try {
                     // console.log(obj);
@@ -55,16 +64,24 @@ requestForm.addEventListener('submit', function(e) {
 
                         if(data.response == "<think>") {
                             tag_parsed_data = "<strong>&lt;think&gt;</strong><br>"
+			                appIsThinking = true;
                         }
                         else if(data.response == "</think>") {
                             tag_parsed_data = "<strong>&lt;&#47;think&gt;</strong><br>"
+			                appIsThinking = false;
                         }
                         responses.push(tag_parsed_data);
+                        if (!appIsThinking && data.response != "</think>") {
+                            messageHistoryResponse.push(data.response) 
+                        }
                     }
                     
                     // Check if this is the final "done: true" object
                     if (data.done === true) {
                         final_object = data;
+			messageHistoryResponse.forEach(character=>{
+			     conversationHistory += character;
+			});
                     }
                 }
                 catch (e) {
@@ -84,7 +101,9 @@ requestForm.addEventListener('submit', function(e) {
             }
 
             output = full_message;
-            outputDiv.innerHTML = output;
+	    const newOutput = document.createElement("div")
+	    outputDiv.appendChild(newOutput)
+            newOutput.innerHTML = output;
         });
 });
 
